@@ -38,3 +38,28 @@ Arrancar el desarrollo de **Training Tracker**, una PWA (Progressive Web App) pa
 ### Siguientes Pasos
 1.  **Diseño de Datos:** Definir el esquema Entidad-Relación (SQL) para Usuarios, Rutinas y Logs.
 2.  **Arquitectura:** Configurar Supabase como backend.
+
+
+## [2026-01-30] - Día 2: Arquitectura de Base de Datos
+
+### Objetivo
+Diseñar el esquema de datos relacional (ER) en Supabase para soportar la lógica de entrenamiento (Top Sets, RIR, Dropsets).
+
+### Decisiones de Ingeniería
+* **Base de Datos:** PostgreSQL (via Supabase) por la necesidad de integridad relacional estricta.
+* **Modelo de Datos:**
+    * Uso de **ENUMs** (`set_type`) para restringir los tipos de series y evitar datos sucios.
+    * **UUIDs** para todas las claves primarias.
+    * **Relaciones en Cascada:** Si se borra un entreno, se borran sus series automáticamente.
+* **Seguridad:** Implementación de **RLS (Row Level Security)** para aislar los datos de cada usuario a nivel de motor de BBDD.
+
+### Estado Actual
+* [x] Proyecto Supabase creado en región EU.
+* [x] Tablas desplegadas y operativas.
+* [x] Variables de entorno (`.env.local`) configuradas con API Keys.
+* [x] Script de creación de tablas respaldado en `schema.sql`.
+
+### Siguientes Pasos
+* Instalar cliente de Supabase en Next.js.
+* Crear Singleton de conexión.
+* Realizar la primera "query" de prueba desde el frontend.
