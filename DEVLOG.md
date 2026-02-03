@@ -63,3 +63,26 @@ Diseñar el esquema de datos relacional (ER) en Supabase para soportar la lógic
 * Instalar cliente de Supabase en Next.js.
 * Crear Singleton de conexión.
 * Realizar la primera "query" de prueba desde el frontend.
+
+## [2026-02-01] - Día 3: Integración Frontend-Backend
+
+### Objetivo
+Conectar la aplicación Next.js con la base de datos Supabase para leer datos reales.
+
+### Implementación
+* **Cliente Supabase:** Instalado SDK `@supabase/supabase-js`.
+* **Patrón Singleton:** Implementado en `src/lib/supabaseClient.ts` para reutilizar una única conexión en toda la app.
+* **Seeding:** Inserción manual de datos de prueba ("Press Banca") en la tabla `exercises` desde el panel de Supabase.
+* **Server Components:** Fetch de datos realizado directamente en `page.tsx` (Server-Side) para mejor rendimiento y SEO.
+
+### Incidencias y Soluciones
+* **Error:** `Module not found: Can't resolve '@/lib/supabaseClient'`.
+* **Causa:** La carpeta `lib` se creó en la raíz del proyecto, pero el alias `@` en `tsconfig.json` apunta a `src/`.
+* **Solución:** Mover la carpeta `lib` dentro del directorio `src`.
+
+### Estado Actual
+* [x] Conexión establecida y verificada.
+* [x] La Home muestra la lista dinámica de ejercicios traída de la BBDD.
+
+### Siguientes Pasos
+* Crear sistema de Login (Auth) para que cada usuario vea SUS datos.
