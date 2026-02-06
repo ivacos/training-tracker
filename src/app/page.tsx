@@ -1,8 +1,14 @@
 import { supabase } from '@/lib/supabaseClient';
+import { redirect } from 'next/navigation';
 
 // Esta es una Server Component (se ejecuta en el servidor, no en el navegador del cliente)
 export default async function Home() {
-  
+  // CÓDIGO PARA EVITAR USUARIOS NO AUTENTICADOS, COMENTADO PARA EVITAR BUCLE EN LA PAGINA DE LOGIN
+  // const { data: { session } } = await supabase.auth.getSession();
+  // if (!session) {
+  //   redirect('/login');
+  // }
+
   // 1. CONSULTA SQL: "SELECT * FROM exercises"
   const { data: exercises, error } = await supabase
     .from('exercises')

@@ -1,79 +1,116 @@
+'use client'; // 👈 Obligatorio para usar useState y onClick
+
+import { useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { redirect } from 'next/navigation'; // 1. IMPORTAR ESTO ⬅️
+import { useRouter } from 'next/navigation';
 
-export default async function Home() {
-  
-  // --- ZONA DE LÓGICA (CEREBRO) ---
+export default function LoginPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const router = useRouter();
 
-  // 1. Pedimos los ejercicios a la Base de Datos
-  const { data: exercises, error } = await supabase
-    .from('exercises')
-    .select('*');
+  // Función para Iniciar Sesión
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage(null);
 
-  // 2. NUEVO: Pedimos ver si hay alguien logueado (La Sesión) ⬅️
-  // Nota: Al usar el cliente básico, es posible que el servidor no vea la cookie
-  // inmediatamente, pero dejamos la estructura lista.
-  const { data: { session } } = await supabase.auth.getSession();
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-  // (Opcional) Si descomentas esto, expulsará a quien no esté logueado:
-  // if (!session) {
-  //   redirect('/login');
-  // }
+    if (error) {
+      setMessage(`❌ Error: ${error.message}`);
+      setLoading(false);
+    } else {
+      setMessage('✅ ¡Login correcto! Redirigiendo...');
+      router.push('/'); // Nos manda a la Home
+      router.refresh(); // Refresca la home para que sepa que has entrado
+    }
+  };
 
+  // Función para Registrarse (Crear cuenta nueva)
+  const handleSignUp = async () => {
+    setLoading(true);
+    setMessage(null);
 
-  // --- ZONA DE DISEÑO (LO QUE SE VE) ---
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      setMessage(`❌ Error al registrarse: ${error.message}`);
+    } else {
+      setMessage('✅ Usuario creado. ¡Revisa tu email o inicia sesión!');
+    }
+    setLoading(false);
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center p-24 bg-gray-950 text-white">
-      <h1 className="text-4xl font-bold mb-8 text-blue-500">
-        Training Tracker v0.1 🚀
-      </h1>
+    <div className="flex min-h-screen items-center justify-center bg-gray-950 p-4">
+      <div className="w-full max-w-md space-y-8 rounded-xl border border-gray-800 bg-gray-900 p-8 shadow-lg">
+        
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-white">Bienvenido</h2>
+          <p className="mt-2 text-gray-400">Training Tracker Access</p>
+        </div>
 
-      {/* 3. NUEVO: EL CHIVATO DE SESIÓN ⬅️ */}
-      {/* Esto es un "If/Else" visual: ¿Hay sesión? Pinta Hola. ¿No? Pinta Link. */}
-      <div className="mb-8">
-        {session ? (
-          <p className="text-green-400 font-medium border border-green-800 bg-green-900/30 px-4 py-2 rounded-full">
-            👋 Hola, usuario conectado ({session.user.email})
-          </p>
-        ) : (
-          <a 
-            href="/login" 
-            className="text-blue-400 hover:text-blue-300 underline font-medium px-4 py-2"
-          >
-            👤 Iniciar Sesión / Registrarse
-          </a>
-        )}
-      </div>
-      
-      <div className="w-full max-w-md border border-gray-800 rounded-xl p-6 bg-gray-900">
-        <h2 className="text-xl font-semibold mb-4 border-b border-gray-700 pb-2">
-          Catálogo de Ejercicios
-        </h2>
-
-        {error && (
-          <div className="p-4 bg-red-900/50 text-red-200 rounded-lg">
-            ❌ Error: {error.message}
+        <form onSubmit={handleLogin} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-300">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1 block w-full rounded-md border border-gray-700 bg-gray-800 p-2 text-white focus:border-blue-500 focus:outline-none"
+              placeholder="tu@email.com"
+              required
+            />
           </div>
-        )}
 
-        {exercises?.length === 0 && (
-          <p className="text-gray-400 italic">No hay ejercicios registrados.</p>
-        )}
+          <div>
+            <label className="block text-sm font-medium text-gray-300">Contraseña</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 block w-full rounded-md border border-gray-700 bg-gray-800 p-2 text-white focus:border-blue-500 focus:outline-none"
+              placeholder="••••••••"
+              required
+            />
+          </div>
 
-        <ul className="space-y-2">
-          {exercises?.map((exercise) => (
-            <li 
-              key={exercise.id} 
-              className="flex justify-between items-center p-3 bg-gray-800 rounded-lg hover:bg-gray-700 transition"
+          {/* Mensajes de Feedback */}
+          {message && (
+            <div className={`p-3 rounded text-sm ${message.includes('❌') ? 'bg-red-900/50 text-red-200' : 'bg-green-900/50 text-green-200'}`}>
+              {message}
+            </div>
+          )}
+
+          <div className="flex gap-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 rounded-md bg-blue-600 py-2 text-white hover:bg-blue-700 disabled:opacity-50 font-semibold"
             >
-              <span className="font-medium">{exercise.name}</span>
-              <span className="text-xs px-2 py-1 bg-blue-900 text-blue-200 rounded-full uppercase">
-                {exercise.muscle_group}
-              </span>
-            </li>
-          ))}
-        </ul>
+              {loading ? 'Cargando...' : 'Entrar'}
+            </button>
+            
+            <button
+              type="button"
+              onClick={handleSignUp}
+              disabled={loading}
+              className="flex-1 rounded-md border border-gray-600 py-2 text-gray-300 hover:bg-gray-800 disabled:opacity-50"
+            >
+              Registrarse
+            </button>
+          </div>
+        </form>
       </div>
-    </main>
+    </div>
   );
 }
