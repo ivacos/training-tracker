@@ -1,6 +1,6 @@
 # Diario de Desarrollo (DevLog)
 
-## [2026-01-29] Día 1 - Inicialización del Proyecto y Configuración de Entorno
+## [2026-01-29] | Día 1: Inicialización del Proyecto y Configuración de Entorno
 
 ### Objetivo Principal
 Arrancar el desarrollo de **Training Tracker**, una PWA (Progressive Web App) para seguimiento de entrenamiento de fuerza con métricas avanzadas (RIR, Top Sets, Dropsets).
@@ -40,7 +40,7 @@ Arrancar el desarrollo de **Training Tracker**, una PWA (Progressive Web App) pa
 2.  **Arquitectura:** Configurar Supabase como backend.
 
 
-## [2026-01-30] - Día 2: Arquitectura de Base de Datos
+## [2026-01-30] | Día 2: Arquitectura de Base de Datos
 
 ### Objetivo
 Diseñar el esquema de datos relacional (ER) en Supabase para soportar la lógica de entrenamiento (Top Sets, RIR, Dropsets).
@@ -64,7 +64,7 @@ Diseñar el esquema de datos relacional (ER) en Supabase para soportar la lógic
 * Crear Singleton de conexión.
 * Realizar la primera "query" de prueba desde el frontend.
 
-## [2026-02-01] - Día 3: Integración Frontend-Backend
+## [2026-02-01] | Día 3: Integración Frontend-Backend
 
 ### Objetivo
 Conectar la aplicación Next.js con la base de datos Supabase para leer datos reales.
@@ -86,3 +86,29 @@ Conectar la aplicación Next.js con la base de datos Supabase para leer datos re
 
 ### Siguientes Pasos
 * Crear sistema de Login (Auth) para que cada usuario vea SUS datos.
+
+## 2026-02-06 | Día 4: Sistema de Autenticación (Login)
+
+### Objetivo
+Implementar la interfaz y la lógica de inicio de sesión y registro de usuarios mediante Email/Password usando Supabase Auth.
+
+### Implementación
+* **Ruta `/login`:** Creada nueva página con formulario (Client Component) que gestiona el estado de email/password.
+* **Lógica de Auth:**
+    * Implementado `supabase.auth.signInWithPassword` para usuarios existentes.
+    * Implementado `supabase.auth.signUp` para nuevos registros.
+    * Feedback visual de éxito/error y redirección automática a la Home.
+
+### Notas Técnicas / Deuda Técnica
+* **Persistencia de Sesión:** Actualmente, el login funciona en el cliente (navegador), pero al redirigir a la Home (Servidor), la sesión puede perderse visualmente.
+* **Causa:** El cliente de Supabase básico (`createClient`) no gestiona automáticamente las cookies en componentes de servidor (Server Components) de Next.js.
+* **Solución Pendiente:** Se implementará un `Middleware` y el helper `ssr` de Supabase en la próxima iteración para sincronizar las cookies entre Cliente y Servidor.
+
+### Estado Actual
+* [x] Formulario de Login/Registro funcional.
+* [x] Usuarios se crean correctamente en el panel de Supabase.
+* [x] Redirección tras login funcionando.
+
+### Siguientes Pasos
+* Configurar Middleware y Cookies para persistencia de sesión.
+* Proteger rutas privadas (que no se pueda entrar a `/dashboard` sin login).
