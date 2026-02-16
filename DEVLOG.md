@@ -112,3 +112,30 @@ Implementar la interfaz y la lógica de inicio de sesión y registro de usuarios
 ### Siguientes Pasos
 * Configurar Middleware y Cookies para persistencia de sesión.
 * Proteger rutas privadas (que no se pueda entrar a `/dashboard` sin login).
+
+## 2026-02-16 | Día 5: Persistencia de Sesión (SSR y Middleware)
+
+### Objetivo
+Solucionar el problema de la pérdida de sesión al recargar y permitir que el Servidor (Next.js) acceda a la identidad del usuario.
+
+### Cambio de Arquitectura (Refactor)
+Se ha migrado del cliente básico (`@supabase/supabase-js`) a la librería de servidor (`@supabase/ssr`) para manejar Cookies.
+
+* **Eliminado:** `src/lib/supabaseClient.ts` (Cliente único inseguro para SSR).
+* **Creado:** Estructura en `src/utils/supabase/`:
+    * `client.ts`: Para componentes interactivos (Browser Client).
+    * `server.ts`: Para componentes de servidor y API (Server Client con acceso a cookies).
+    * `middleware.ts`: Utilidad para gestionar la respuesta del servidor.
+
+### Implementación del Middleware
+* Creado `src/middleware.ts` en la raíz.
+* **Función:** Intercepta cada petición, refresca el token de sesión si ha caducado y sincroniza las cookies entre el Navegador y el Servidor.
+
+### Estado Actual
+* [x] La sesión persiste tras F5 (Recarga).
+* [x] La Home (`page.tsx`) ahora sabe quién es el usuario desde el servidor (SSR).
+* [x] Eliminado el "parpadeo" de estado de login incorrecto.
+
+### Siguientes Pasos
+* Implementar botón de **Logout** (Cerrar Sesión).
+* Proteger rutas privadas (Redirigir a `/login` si intentas entrar a `/dashboard` sin permiso).
