@@ -139,3 +139,29 @@ Se ha migrado del cliente básico (`@supabase/supabase-js`) a la librería de se
 ### Siguientes Pasos
 * Implementar botón de **Logout** (Cerrar Sesión).
 * Proteger rutas privadas (Redirigir a `/login` si intentas entrar a `/dashboard` sin permiso).
+
+## 2026-02-17 | Día 6: Logout, Seguridad y Rutas Privadas
+
+### Objetivo
+Implementar el cierre de sesión (Logout) y crear zonas restringidas de la aplicación.
+
+### Implementación
+* **Logout:**
+    * Creada ruta API `src/app/auth/signout/route.ts` para destruir la sesión en el servidor.
+    * Botón funcional en la Home que dispara la acción de logout.
+* **Rutas Privadas:**
+    * Creada página `/dashboard` que verifica la sesión antes de renderizar.
+    * Redirección automática a `/login` si un usuario anónimo intenta entrar.
+
+### Corrección de Configuración (Fix)
+* **Incidencia:** Aviso persistente "Middleware file convention is deprecated".
+* **Solución:** Se movió el archivo `middleware.ts` desde `src/` a la raíz del proyecto para cumplir estrictamente con la convención de Next.js y limpiar los warnings de la consola.
+* **Limpieza:** Se eliminaron archivos duplicados o residuales de pruebas anteriores.
+
+### Estado Actual
+* [x] Login y Logout funcionan perfectamente.
+* [x] El Dashboard es inaccesible sin credenciales.
+* [x] Consola de desarrollo limpia de errores.
+
+### Siguientes Pasos
+* Diseñar la base de datos para guardar los entrenamientos (Tabla `workouts`).

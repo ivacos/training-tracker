@@ -25,10 +25,18 @@ export default async function Home() {
             <p className="text-green-400 font-medium mb-2">
               ✅ Sesión Activa: {user.email}
             </p>
+            <a 
+              href="/dashboard" 
+              className="block mb-2 text-center bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded font-bold transition"
+            >
+              Ir a mi Dashboard →
+            </a>
             <form action="/auth/signout" method="post">
-              {/* Nota: El logout lo haremos mañana, hoy solo visualizamos */}
-              <button className="text-xs text-gray-500 hover:text-white transition">
-                (Cerrar sesión - Próximamente)
+              <button 
+                className="text-xs text-red-400 hover:text-red-300 transition border border-red-900 bg-red-950/30 px-3 py-1 rounded"
+                type="submit"
+              >
+                Cerrar sesión
               </button>
             </form>
           </div>
