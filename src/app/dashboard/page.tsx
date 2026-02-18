@@ -1,52 +1,76 @@
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
+import LogWorkoutForm from '../../components/LogWorkoutForm'; // 👈 Importamos el nuevo componente
 
 export default async function Dashboard() {
   const supabase = await createClient();
 
-  // 1. VERIFICACIÓN DE SEGURIDAD (El Portero)
+  // 1. Verificar Usuario
   const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
 
-  // Si no hay usuario, ¡FUERA! Te mando al login
-  if (!user) {
-    redirect('/login');
-  }
+  // 2. Cargar ejercicios (para el selector)
+  const { data: exercises } = await supabase.from('exercises').select('id, name').order('name');
 
-  // 2. Si llegamos aquí, es que estás logueado.
-  // Aquí es donde cargaríamos TUS entrenamientos de la BBDD.
-  
+  // 3. Cargar historial reciente del usuario
+  // 3. Cargar historial reciente (Tabla 'sets')
+  const { data: logs } = await supabase
+    .from('sets')
+    .select(`
+      id,
+      weight,
+      reps,
+      created_at,
+      exercises (name)
+    `)
+    .order('created_at', { ascending: false })
+    .limit(5);
+
   return (
     <div className="min-h-screen bg-gray-950 text-white p-8">
       <div className="max-w-4xl mx-auto">
-        <header className="flex justify-between items-center mb-12 border-b border-gray-800 pb-4">
-          <h1 className="text-3xl font-bold text-blue-500">Mi Panel de Control</h1>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-400">{user.email}</span>
-            <form action="/auth/signout" method="post">
-              <button className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded text-sm transition">
-                Salir
-              </button>
-            </form>
-          </div>
+        
+        {/* Encabezado */}
+        <header className="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
+          <h1 className="text-2xl font-bold">Hola, {user.email?.split('@')[0]} 👋</h1>
+          <form action="/auth/signout" method="post">
+            <button className="text-sm text-gray-400 hover:text-white">Cerrar Sesión</button>
+          </form>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Tarjeta 1: Resumen */}
-          <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl">
-            <h2 className="text-xl font-semibold mb-2">📅 Últimos Entrenamientos</h2>
-            <p className="text-gray-400 text-sm">Aún no has registrado ningún entrenamiento.</p>
-            <button className="mt-4 w-full py-2 bg-blue-600 hover:bg-blue-700 rounded font-medium transition">
-              + Nuevo Entreno
-            </button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          {/* COLUMNA IZQUIERDA: Formulario */}
+          <div>
+            <LogWorkoutForm exercises={exercises || []} />
           </div>
 
-          {/* Tarjeta 2: Estadísticas */}
-          <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl">
-            <h2 className="text-xl font-semibold mb-2">📈 Progreso Semanal</h2>
-            <div className="h-32 flex items-center justify-center bg-gray-950/50 rounded border border-gray-800 border-dashed">
-              <span className="text-gray-600 text-xs">Gráfico próximamente...</span>
-            </div>
+          {/* COLUMNA DERECHA: Historial */}
+          <div className="bg-gray-900 p-6 rounded-xl border border-gray-800">
+            <h3 className="text-lg font-bold mb-4 text-green-400">Últimos Registros</h3>
+            
+            {!logs || logs.length === 0 ? (
+              <p className="text-gray-500 text-sm">No hay actividad reciente.</p>
+            ) : (
+              <ul className="space-y-3">
+                {logs.map((log) => (
+                  <li key={log.id} className="flex justify-between items-center border-b border-gray-800 pb-2">
+                    <div>
+                      <span className="block font-medium">{log.exercises?.name}</span>
+                      <span className="text-xs text-gray-500">
+                        {new Date(log.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <span className="block text-xl font-bold text-blue-400">{log.weight} kg</span>
+                      <span className="text-xs text-gray-400">{log.reps} reps</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
+
         </div>
       </div>
     </div>

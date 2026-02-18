@@ -165,3 +165,29 @@ Implementar el cierre de sesión (Logout) y crear zonas restringidas de la aplic
 
 ### Siguientes Pasos
 * Diseñar la base de datos para guardar los entrenamientos (Tabla `workouts`).
+
+## 2026-02-18 | Día 7: Base de Datos Relacional y Core del Tracker
+
+### Objetivo
+Implementar la arquitectura de datos definitiva (Entrenamientos/Series) y conectar el formulario de registro.
+
+### Arquitectura de Datos (SQL)
+Se ha migrado de una tabla simple a un sistema relacional profesional:
+* **`profiles`:** Tabla espejo de `auth.users` para gestionar datos públicos del usuario.
+* **`workouts`:** Agrupa las series por sesión/fecha.
+* **`sets`:** La unidad atómica de información (peso, reps, RIR).
+* **Triggers:** Se implementó un trigger `handle_new_user` para crear perfiles automáticamente al registrarse.
+
+### Backend & Frontend
+* **Server Action:** `addWorkoutLog` gestiona la creación transaccional de la sesión (`workout`) y la serie (`set`) en un solo paso.
+* **Dashboard:** Visualización en tiempo real de las últimas series usando relaciones SQL (Joins).
+* **Fix Crítico:** Se resolvió un error de integridad referencial (`Foreign Key Violation`) regenerando manualmente los perfiles de usuarios existentes que no tenían ficha en la nueva tabla `profiles`.
+
+### Estado Actual
+* [x] Base de datos relacional operativa.
+* [x] El usuario puede registrar series (Peso/Reps).
+* [x] Los datos se persisten y se muestran instantáneamente en el dashboard.
+
+### Siguientes Pasos
+* Mejorar la UX: Mostrar feedback visual (toast/notificación) al guardar.
+* Agrupar las series visualmente por "Sesión de Entrenamiento" en lugar de una lista plana.
