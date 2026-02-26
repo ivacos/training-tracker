@@ -191,3 +191,28 @@ Se ha migrado de una tabla simple a un sistema relacional profesional:
 ### Siguientes Pasos
 * Mejorar la UX: Mostrar feedback visual (toast/notificación) al guardar.
 * Agrupar las series visualmente por "Sesión de Entrenamiento" en lugar de una lista plana.
+
+## 2026-02-26 | Día 8: User Experience (UX) y Lógica de Negocio (Agrupación de Series)
+
+### Objetivo
+Mejorar la experiencia de usuario dando feedback visual al guardar y estructurando los datos como en una app de fitness real.
+
+### Implementación Técnica
+* **Botón Inteligente (UX):**
+    * Se ha implementado `useFormStatus` de React para detectar peticiones en curso.
+    * El botón se bloquea y muestra un estado de "⏳ Guardando..." para evitar dobles envíos y dar feedback al usuario.
+* **Agrupación Inteligente (Backend):**
+    * Se ha reescrito la acción `addWorkoutLog`.
+    * **Lógica implementada:** 1 Día = 1 Sesión. El sistema busca si ya existe un `workout` creado en el día actual (desde las 00:00). Si existe, vincula la nueva serie (`set`) a esa sesión. Si no existe, crea una sesión nueva.
+* **Visualización (Frontend):**
+    * El Dashboard ahora realiza una consulta relacional anidada (`Workouts` -> `Sets` -> `Exercises`).
+    * Las series se renderizan agrupadas visualmente dentro de la tarjeta de su sesión correspondiente, ordenadas cronológicamente.
+
+### Estado Actual
+* [x] Feedback visual al guardar datos.
+* [x] Agrupación automática de series por día/sesión.
+* [x] Interfaz limpia y estructurada.
+
+### Siguientes Pasos
+* Añadir un botón para poder eliminar una serie si el usuario se equivoca al introducirla.
+* Mejorar la agrupación de series del mismo ejercicio
