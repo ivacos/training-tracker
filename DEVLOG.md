@@ -216,3 +216,27 @@ Mejorar la experiencia de usuario dando feedback visual al guardar y estructuran
 ### Siguientes Pasos
 * Añadir un botón para poder eliminar una serie si el usuario se equivoca al introducirla.
 * Mejorar la agrupación de series del mismo ejercicio
+
+## 2026-03-03 | Día 9: Agrupación Visual y Borrado de Series
+
+### Objetivo
+Mejorar la lectura del historial agrupando las series por ejercicio y otorgar al usuario el control para eliminar datos erróneos.
+
+### Implementación Técnica
+* **Frontend (Agrupación):**
+    * Se implementó lógica de transformación de datos en el Dashboard usando `reduce`.
+    * Las series (sets) ahora se agrupan bajo el nombre de su ejercicio correspondiente, mostrando un historial limpio y estructurado.
+* **Backend (Borrado):**
+    * Creada la Server Action `deleteSet` que recibe el ID de la serie y la elimina de Supabase.
+    * Implementado un botón "✕" por cada serie usando un `<form>` sin JavaScript cliente, aprovechando las Server Actions de Next.js.
+* **Base de Datos (Fix de Seguridad):**
+    * Se añadió una nueva política RLS para permitir la operación `DELETE` en la tabla `sets`, validando que el usuario logueado es el dueño del entrenamiento padre.
+
+### Estado Actual
+* [x] Historial agrupado por ejercicios.
+* [x] Borrado de series funcional y seguro.
+* [x] UX de nivel de producción en la gestión diaria del entrenamiento.
+
+### Siguientes Pasos
+* Permitir al usuario añadir sus propios ejercicios a la base de datos (actualmente la lista es fija).
+* Crear plantillas/rutinas predefinidas (ej. "Empuje", "Tirón", "Pierna").

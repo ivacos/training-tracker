@@ -71,3 +71,27 @@ export async function addWorkoutLog(formData: FormData) {
   revalidatePath('/dashboard')
   return { success: true }
 }
+
+export async function deleteSet(formData: FormData) {
+  const supabase = await createClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const setId = formData.get('setId') as string
+
+  // Borramos la serie que coincida con el ID
+  const { error } = await supabase
+    .from('sets')
+    .delete()
+    .eq('id', setId)
+
+  if (error) {
+    console.error('Error borrando serie:', error)
+    return { success: false }
+  }
+
+  // Recargamos la página para que desaparezca visualmente
+  revalidatePath('/dashboard')
+  return { success: true }
+}
